@@ -109,16 +109,16 @@ std::vector<std::vector<T1>> execute(const std::shared_ptr<ngraph::Function>& fu
         throw ngraph::ngraph_error("number of parameters and arguments don't match");
     }
 
-    std::vector<std::shared_ptr<ngraph::runtime::Tensor>> arg_tensors(args.size());
+    std::vector<std::unique_ptr<ngraph::runtime::Tensor>> arg_tensors(args.size());
     for (size_t i = 0; i < args.size(); i++)
     {
         auto t = backend->create_tensor(parms.at(i)->get_element_type(), parms.at(i)->get_shape());
         copy_data(t, args.at(i));
-        arg_tensors.at(i) = t;
+        arg_tensors.at(i) = move(t);
     }
 
     auto results = function->get_results();
-    std::vector<std::shared_ptr<ngraph::runtime::Tensor>> result_tensors(results.size());
+    std::vector<std::unique_ptr<ngraph::runtime::Tensor>> result_tensors(results.size());
 
     for (size_t i = 0; i < results.size(); i++)
     {

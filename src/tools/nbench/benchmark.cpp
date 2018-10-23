@@ -40,73 +40,73 @@ void set_denormals_flush_to_zero()
 }
 
 template <typename T>
-void init_int_tv(shared_ptr<runtime::Tensor> tv, T min, T max)
+void init_int_tv(runtime::Tensor& tv, T min, T max)
 {
-    size_t size = tv->get_element_count();
+    size_t size = tv.get_element_count();
     uniform_int_distribution<T> dist(min, max);
     vector<T> vec(size);
     for (T& element : vec)
     {
         element = dist(s_random_engine);
     }
-    tv->write(vec.data(), 0, vec.size() * sizeof(T));
+    tv.write(vec.data(), 0, vec.size() * sizeof(T));
 }
 
 template <>
-void init_int_tv<char>(shared_ptr<runtime::Tensor> tv, char min, char max)
+void init_int_tv<char>(runtime::Tensor& tv, char min, char max)
 {
-    size_t size = tv->get_element_count();
+    size_t size = tv.get_element_count();
     uniform_int_distribution<int16_t> dist(static_cast<short>(min), static_cast<short>(max));
     vector<char> vec(size);
     for (char& element : vec)
     {
         element = static_cast<char>(dist(s_random_engine));
     }
-    tv->write(vec.data(), 0, vec.size() * sizeof(char));
+    tv.write(vec.data(), 0, vec.size() * sizeof(char));
 }
 
 template <>
-void init_int_tv<int8_t>(shared_ptr<runtime::Tensor> tv, int8_t min, int8_t max)
+void init_int_tv<int8_t>(runtime::Tensor& tv, int8_t min, int8_t max)
 {
-    size_t size = tv->get_element_count();
+    size_t size = tv.get_element_count();
     uniform_int_distribution<int16_t> dist(static_cast<short>(min), static_cast<short>(max));
     vector<int8_t> vec(size);
     for (int8_t& element : vec)
     {
         element = static_cast<int8_t>(dist(s_random_engine));
     }
-    tv->write(vec.data(), 0, vec.size() * sizeof(int8_t));
+    tv.write(vec.data(), 0, vec.size() * sizeof(int8_t));
 }
 
 template <>
-void init_int_tv<uint8_t>(shared_ptr<runtime::Tensor> tv, uint8_t min, uint8_t max)
+void init_int_tv<uint8_t>(runtime::Tensor& tv, uint8_t min, uint8_t max)
 {
-    size_t size = tv->get_element_count();
+    size_t size = tv.get_element_count();
     uniform_int_distribution<int16_t> dist(static_cast<short>(min), static_cast<short>(max));
     vector<uint8_t> vec(size);
     for (uint8_t& element : vec)
     {
         element = static_cast<uint8_t>(dist(s_random_engine));
     }
-    tv->write(vec.data(), 0, vec.size() * sizeof(uint8_t));
+    tv.write(vec.data(), 0, vec.size() * sizeof(uint8_t));
 }
 
 template <typename T>
-void init_real_tv(shared_ptr<runtime::Tensor> tv, T min, T max)
+void init_real_tv(runtime::Tensor& tv, T min, T max)
 {
-    size_t size = tv->get_element_count();
+    size_t size = tv.get_element_count();
     uniform_real_distribution<T> dist(min, max);
     vector<T> vec(size);
     for (T& element : vec)
     {
         element = dist(s_random_engine);
     }
-    tv->write(vec.data(), 0, vec.size() * sizeof(T));
+    tv.write(vec.data(), 0, vec.size() * sizeof(T));
 }
 
-static void random_init(shared_ptr<runtime::Tensor> tv)
+static void random_init(runtime::Tensor& tv)
 {
-    element::Type et = tv->get_element_type();
+    element::Type et = tv.get_element_type();
     if (et == element::boolean)
     {
         init_int_tv<char>(tv, 0, 1);
@@ -174,14 +174,14 @@ vector<runtime::PerformanceCounter> run_benchmark(shared_ptr<Function> f,
     cout << "compile time: " << timer.get_milliseconds() << "ms" << endl;
 
     vector<shared_ptr<runtime::HostTensor>> arg_data;
-    vector<shared_ptr<runtime::Tensor>> args;
+    vector<unique_ptr<runtime::Tensor>> args;
     vector<bool> args_cacheable;
     for (shared_ptr<op::Parameter> param : f->get_parameters())
     {
         auto tensor = backend->create_tensor(param->get_element_type(), param->get_shape());
         auto tensor_data =
             make_shared<runtime::HostTensor>(param->get_element_type(), param->get_shape());
-        random_init(tensor);
+        random_init(*tensor);
         args.push_back(tensor);
         arg_data.push_back(tensor_data);
         args_cacheable.push_back(param->get_cacheable());
@@ -189,7 +189,7 @@ vector<runtime::PerformanceCounter> run_benchmark(shared_ptr<Function> f,
     set_denormals_flush_to_zero();
 
     vector<shared_ptr<runtime::HostTensor>> result_data;
-    vector<shared_ptr<runtime::Tensor>> results;
+    vector<unique_ptr<runtime::Tensor>> results;
     for (shared_ptr<Node> out : f->get_results())
     {
         auto result = backend->create_tensor(out->get_element_type(), out->get_shape());

@@ -144,10 +144,10 @@ namespace ngraph
 class ngraph::runtime::interpreter::INTBackend : public Backend
 {
 public:
-    std::shared_ptr<Tensor>
+    std::unique_ptr<Tensor>
         create_tensor(const element::Type& type, const Shape& shape, void* memory_pointer) override;
 
-    std::shared_ptr<Tensor> create_tensor(const element::Type& type, const Shape& shape) override;
+    std::unique_ptr<Tensor> create_tensor(const element::Type& type, const Shape& shape) override;
 
     bool compile(std::shared_ptr<Function> function) override;
 
