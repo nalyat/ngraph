@@ -529,8 +529,8 @@ size_t runtime::gpu::CUDNNEmitter::build_primitive(const op::Convolution* node)
         idx_workspace = allocator.reserve_workspace(temp_size, true);
 
         auto& cuda_emitter = m_primitive_emitter->get_cuda_emitter();
-        pad_index = cuda_emitter->build_pad({{args[0].get_element_type().c_type_string(),
-                                              out[0].get_element_type().c_type_string()}},
+        pad_index = cuda_emitter->build_pad({args[0].get_element_type().c_type_string(),
+                                              out[0].get_element_type().c_type_string()},
                                             input_shape,
                                             input_shape_padded,
                                             padding_below,
@@ -653,7 +653,7 @@ size_t runtime::gpu::CUDNNEmitter::build_primitive(const op::ConvolutionBackprop
         idx_workspace = allocator.reserve_workspace(temp_size, true);
 
         auto& cuda_emitter = m_primitive_emitter->get_cuda_emitter();
-        pad_index = cuda_emitter->build_pad({{input_type, output_type}},
+        pad_index = cuda_emitter->build_pad({input_type, output_type},
                                             output_shape,
                                             output_shape_padded,
                                             padding_below,
@@ -772,7 +772,7 @@ size_t runtime::gpu::CUDNNEmitter::build_primitive(const op::ConvolutionBackprop
         idx_workspace = allocator.reserve_workspace(temp_size, true);
 
         auto& cuda_emitter = m_primitive_emitter->get_cuda_emitter();
-        pad_index = cuda_emitter->build_pad({{input_type, output_type}},
+        pad_index = cuda_emitter->build_pad({input_type, output_type},
                                             input_shape_0,
                                             input_shape_padded,
                                             padding_below,
@@ -865,7 +865,7 @@ size_t runtime::gpu::CUDNNEmitter::build_primitive(const op::MaxPool* node)
                                                    padded_size * args[0].get_element_type().size());
 
         auto& cuda_emitter = m_primitive_emitter->get_cuda_emitter();
-        pad_index = cuda_emitter->build_pad({{input_type, output_type}},
+        pad_index = cuda_emitter->build_pad({input_type, output_type},
                                             input_shape,
                                             input_shape_padded,
                                             padding_below,

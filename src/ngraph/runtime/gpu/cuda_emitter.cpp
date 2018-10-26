@@ -318,6 +318,7 @@ size_t runtime::gpu::CUDAEmitter::build_pad(const std::vector<std::string>& dtyp
     uint32_t rank = static_cast<uint32_t>(input_shape.size());
     std::stringstream kernel_name;
     kernel_name << "pad_" << join(dtypes, "_") << rank;
+    std::cout<<"Kernel name: "<<kernel_name.str()<<" "<<dtypes.front()<<" "<<dtypes.back()<<std::endl;
 
     std::string hash = kernel_name.str() + "pad_i" + join(input_shape, "_") + "pad_o" +
                        join(output_shape) + "_pb" + join(padding_below, "_") + "_pi" +
@@ -1343,7 +1344,7 @@ size_t runtime::gpu::CUDAEmitter::build_primitive(const op::MaxPool* node)
                                                    padded_size * args[0].get_element_type().size());
 
         auto& cuda_emitter = m_primitive_emitter->get_cuda_emitter();
-        pad_index = cuda_emitter->build_pad({{input_type, output_type}},
+        pad_index = cuda_emitter->build_pad({input_type, output_type},
                                             input_shape,
                                             input_shape_padded,
                                             padding_below,
@@ -2398,7 +2399,7 @@ size_t runtime::gpu::CUDAEmitter::build_primitive(const op::ReplaceSlice* node, 
     Shape replace_strides = row_major_strides(replace_shape);
 
     size_t pad_index = build_pad(
-        {{input_type, output_type}}, replace_shape, input_shape, lower_bounds, slice_strides);
+        {input_type, output_type}, replace_shape, input_shape, lower_bounds, slice_strides);
 
     if (in_place_op)
     {

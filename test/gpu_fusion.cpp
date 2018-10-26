@@ -466,7 +466,7 @@ TEST(gpu_fusion, rnn_fusion_inter_vs_gpu_1rnn_layer_3lstm_cell)
     auto gpu_results = execute(gpu_f, args, "GPU");
     for (size_t i = 0; i < gpu_results.size(); i++)
     {
-        EXPECT_TRUE(test::all_close(gpu_results.at(i), int_results.at(i), 1.0e-4f, 1.0e-4f));
+        EXPECT_TRUE(test::all_close(gpu_results.at(i), int_results.at(i), 1.0e-3f, 1.0e-3f));
     }
 }
 
