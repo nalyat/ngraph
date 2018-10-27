@@ -67,7 +67,7 @@ def find_pybind_headers_dir():
 NGRAPH_CPP_DIST_DIR = find_ngraph_dist_dir()
 PYBIND11_INCLUDE_DIR = find_pybind_headers_dir() + "/include"
 NGRAPH_CPP_INCLUDE_DIR = NGRAPH_CPP_DIST_DIR + "/include"
-NGRAPH_CPP_LIBRARY_DIR = NGRAPH_CPP_DIST_DIR + "/lib"
+NGRAPH_CPP_LIBRARY_DIR = NGRAPH_CPP_DIST_DIR + "/lib64"
 
 
 # Parallel build from:
